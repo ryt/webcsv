@@ -2,7 +2,7 @@
 
 Simple python app to view CSV files on the browser. The CSV data will be rendered with an HTML table. This app uses [Flask](https://github.com/flask/flask) & [Gunicorn](https://github.com/gunicorn/gunicorn) with [ryt/runapp](https://github.com/ryt/runapp) for deployment.
 
-## Test/Development Instructions
+## Test/Development Server
 
 Run the app with the default Flask development server on port 5000.
 
@@ -12,7 +12,7 @@ $ python3 webcsv.py
 
 ## Deployment Instructions
 
-Create & start a deployment, gunicorn (daemon/process), with app:
+Create & start a deployment, gunicorn (daemon/process), with runapp:
 
 ```
 $ cd webcsv
