@@ -1,6 +1,6 @@
 # webcsv: Simple CSV Web Viewer
 
-Simple python app to view CSV files on the browser. This app uses Flask & Runapp\<Gunicorn\> (ryt/runapp) for Deployment.
+Simple python app to view CSV files on the browser. The CSV data will be rendered with an HTML table. This app uses Flask & Runapp\<Gunicorn\> (ryt/runapp) for Deployment.
 
 ## Test/Development Instructions
 
