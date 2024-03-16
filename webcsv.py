@@ -1,22 +1,39 @@
 #!/usr/bin/env python3
-from flask import Flask
+
+# This app uses Flask & Runapp (ryt/runapp).
+
+# Create & start gunicorn (daemon/process) with app:
+# $ cd webcsv
+# $ ./runapp start
+
+# Stop app process:
+# $ ./runapp stop
+
+# Check running app process:
+# $ ./runapp list
+
+# Restart app process:
+# $ ./runapp restart
+
+
+from flask import Flask, request
+
+
 
 app = Flask(__name__)
 
 @app.route("/")
 @app.route("/webcsv")
+
 def hello(subpath=None):
-  return "<pre>Hello, world! This is webcsv running <b>Flask</b>!</pre>"
 
+  nl = '\n'
+  html = []
 
-# Create & start daemon with app:
-#   gunicorn app:app -n flaskapp -w 2 -u ray -g staff -b :8001 -D
+  getf = request.args.get('f')
 
-# Stop app process (daemon):
-#  kill -9 <ppid>
+  html += ['<h3>webcsv</h3>']
+  html += [f'<p>current value of <b>f</b> is: <u>{getf}</u>']
 
-# Check running (daemon) from processes on Mac OS:
-#  ps aux | grep '[f]laskapp' --color=always | sed 's/Library.*MacOS/.../g'
+  return nl.join(html)
 
-# Check all gunicorn apps/processes:
-#  ps aux | grep '[g]unicorn' --color=always | sed 's/Library.*MacOS/.../g'
