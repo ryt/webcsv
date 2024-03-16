@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-# This app uses Flask & Runapp/Gunicorn (ryt/runapp) for Deployment.
+# This app uses Flask & Gunicorn with ryt/runapp for deployment.
 
-# Create & start a deployment, gunicorn (daemon/process), with app:
+# Create & start a deployment, gunicorn (daemon/process), with runapp:
 # $ cd webcsv
 # $ ./runapp start
 
