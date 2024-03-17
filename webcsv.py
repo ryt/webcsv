@@ -30,6 +30,7 @@ import os
 import csv
 
 from flask import Flask
+from flask import escape
 from flask import request
 from flask import render_template
 
@@ -53,12 +54,14 @@ def html_render_csv(path):
 
       html_table += '<tr>'
       for header in headers:
+        header = escape(header)
         html_table += f'<th>{header}</th>'
       html_table += '</tr>\n'
 
       for row in csv_reader:
         html_table += '<tr>'
         for cell in row:
+          cell = escape(cell)
           html_table += f'<td>{cell}</td>'
         html_table += '</tr>\n'
       
