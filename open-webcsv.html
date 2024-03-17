@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>webcsv</title>
+  <script type="text/javascript">
+    var goto = location.href;
+        goto = goto.replace(/^file:\/\//,'');
+        goto = goto.replace(/\/open-webcsv.html$/,'')
+        goto = 'http://127.0.0.1:8002/webcsv?f=' + goto;
+    document.location.href = goto;
+  </script>
+</head>
+<body>
+  You are being redirected.
+</body>
+</html>

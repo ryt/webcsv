@@ -44,6 +44,12 @@ $ ./runapp list
 $ ./runapp start
 ```
 
+## Open From Folder
+
+To use webcsv in a particular folder locally, copy `open-webcsv.html` to that folder and open it. You'll automatically be redirected to webcsv with the path set to that folder.
+
+You can change the port and path in `open-webcsv.html` if you have a custom port and path for the app.
+
 --
 
 <small>Copyright &copy; 2024 Ray Mentose.</small>
