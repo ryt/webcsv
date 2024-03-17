@@ -20,7 +20,11 @@
 # $ ./runapp start
 
 v = '0.0.1'
-c = 'Copyright (C) 2024 Ray Mentose.'
+
+"""
+Copyright (C) 2024 Ray Mentose.
+Latest version of the project on Github at: https://github.com/ryt/webcsv
+"""
 
 import os
 import csv
@@ -103,10 +107,15 @@ def index(subpath=None):
       addrbuild += f'/{path}'
       address.append((f'{path}', f'{addrbuild}', '/'))
 
-  view['getf']    = getf
-  view['newfs']   = newfs
-  view['address'] = address
+  view['getf']        = getf
+  view['newfs']       = newfs
+  view['address']     = address
+  view['show_header'] = True
 
+  hide = request.args.get('hide')
+
+  if hide and hide == 'true':
+    view['show_header'] = False
 
   return render_template('template.html', view=view)
 

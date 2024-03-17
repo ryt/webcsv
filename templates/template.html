@@ -2,34 +2,42 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>webcsv: Simple CSV Web Viewer</title>
+  <title>webcsv: {{ view.getf if view.getf else 'Simple CSV Web Viewer' }}</title>
   <style>
-    body { margin: 0; font: 16px sans-serif; }
-    h2 { margin: 0; padding: 8px 16px; background: #ddd; border-bottom: 1px solid #ccc; }
+    body { margin: 0; font: 14px sans-serif; }
+    h2 { margin: 0; padding: 8px 16px; background: #ddd; border-bottom: 1px solid #bbb; }
+    h2 a { color:#000; text-decoration: none; }
+    h2 a.hide { font-size: 12px; font-weight: bold; position: relative; top: -2px; }
+    h2 a.hide:hover { text-decoration: none; }
     a { color: #000; text-decoration: none; }
     a:hover { text-decoration: underline; }
     a.dotfiles { color:#777; }
-    .address { padding: 8px 16px; border-bottom: 1px solid #ddd; margin: 0 0 8px; background: #eee; }
+    .address { font-family: monospace; padding: 8px 16px; border-bottom: 1px solid #aaa; background: #eee; }
     .address a { text-decoration: underline; }
     .address span { color:#777; }
     .address a:last-child { font-weight: bold; }
-    .error { padding: 0 8px; font-size:15px; color: #333; }
-    .dir-list { padding: 0 16px; font-family: monospace; font-size: 14px; }
-    .dir-item { margin: 0; padding: 4px 0; }
-    .file-show { padding:0 8px; }
-    .csv-table { border-collapse: collapse; }
-    .csv-table th, .csv-table td { border: 1px solid #ccc; padding: 8px; }
-    .csv-table th { background: linear-gradient(#f5f5f5, #eee); }
+    .error { color: #555; font-family: monospace; padding: 4px 0; }
+    .dir-list { padding: 8px 16px; font-family: monospace; font-size: 14px; }
+    .dir-item { padding: 4px 0; }
+    .file-show { padding:16px; }
+    .csv-table { border-collapse: collapse; font-size:13px; }
+    .csv-table th, .csv-table td { border: 1px solid #ccc; padding: 8px; font-weight: normal; }
+    .csv-table th { background: linear-gradient(#f9f9f9 0% 50%, #f2f2f2 50% 100%); }
     .csv-table td { }
   </style>
 </head>
 <body>
 
-  <h2>webcsv</h2>
+  {% if view.show_header %}
+  <h2>
+    <a href="/?f=/">webcsv</a>
+    <a class="hide" href="?f={{ view.getf }}&amp;hide=true">&#10548;</a>
+  </h2>
 
   <div class="address">
-    Path: {% for a in view.address %}<span>{{ a[2] }}</span><a href="?f={{ a[1] }}">{{ a[0] }}</a>{% endfor %}
+    Path: {% for a in view.address %} <span>{{ a[2] }}</span> <a href="?f={{ a[1] }}">{{ a[0] }}</a>{% endfor %}
   </div>
+  {% endif %}
 
   {% if view.newfs %}
   <div class="dir-list">
@@ -39,14 +47,17 @@
   </div>
   {% endif %}
 
-  <div class="file-show">
-    {% if view.csvshow %}
+  {% if view.csvshow %}
+    <div class="file-show">
       {{ view.csvshow | safe }}
-    {% endif %}
-    {% if view.noncsv %}
-      <div class="error">This file is not a CSV file.</div>
-    {% endif %}
-  </div>
+    </div>
+  {% endif %}
+
+  {% if view.noncsv %}
+    <div class="dir-list">
+      <div class="error">Not a CSV file.</div>
+    </div>
+  {% endif %}
 
 </body>
 </html>
