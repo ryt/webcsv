@@ -19,6 +19,9 @@
 # $ ./runapp list
 # $ ./runapp start
 
+v = '0.0.1'
+c = 'Copyright (C) 2024 Ray Mentose.'
+
 import os
 import csv
 
