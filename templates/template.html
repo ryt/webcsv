@@ -34,7 +34,7 @@
   {% if view.show_header %}
   <h2>
     <a href="/?f=/">webcsv</a>
-    <a class="hide" href="?f={{ view.getf }}&amp;hide=true">&#10548;</a>
+    <a class="hide" href="?f={{ view.getf }}{{ view.getview_qs }}&amp;hide=true">&#10548;</a>
   </h2>
 
   <div class="address">
@@ -58,7 +58,7 @@
 
   {% if view.noncsv %}
     <div class="dir-list">
-      {% if view.noncsv_view %}
+      {% if view.noncsv_plain %}
       <pre class="noncsv-plain">{{ view.noncsv_plain }}</pre>
       {% else %}
       <div class="error">Not a CSV file. <small>[<a href="?f={{ view.getf }}&amp;view=plain">view</a>]</small></div>

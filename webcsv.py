@@ -101,6 +101,8 @@ def plain_render_file(path):
 def index(subpath=None):
 
   getf = request.args.get('f') or ''
+  getview = request.args.get('view') or ''
+
   view = {}
   newfs = []
 
@@ -115,8 +117,7 @@ def index(subpath=None):
           newfs.append((f, f'{parpt}/{f}'))
   else:
     view['noncsv'] = True
-    view['noncsv_view'] = request.args.get('view') or ''
-    view['noncsv_plain'] = plain_render_file(getf) if view['noncsv_view'] == 'plain' else ''
+    view['noncsv_plain'] = plain_render_file(getf) if getview == 'plain' else ''
 
   if getf.endswith('.csv'):
     view['csvshow'] = html_render_csv(getf)
@@ -132,6 +133,7 @@ def index(subpath=None):
   view['getf']        = getf
   view['newfs']       = newfs
   view['address']     = address
+  view['getview_qs']  = f'&view={getview}' if getview else ''
   view['show_header'] = True
 
   hide = request.args.get('hide')
