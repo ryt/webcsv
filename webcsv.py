@@ -78,6 +78,23 @@ def html_render_csv(path):
   return render
 
 
+def plain_render_file(path):
+
+  render = ''
+
+  try:
+    with open(path, 'r') as file:
+      render = file.read()
+
+  except FileNotFoundError:
+    render = html_return_error(f"The file '{path}' does not exist.")
+
+  except IOError:
+    render = html_return_error(f"Error reading the file '{path}'.")
+
+  return render
+
+
 @app.route('/')
 @app.route('/webcsv')
 
@@ -98,6 +115,8 @@ def index(subpath=None):
           newfs.append((f, f'{parpt}/{f}'))
   else:
     view['noncsv'] = True
+    view['noncsv_view'] = request.args.get('view') or ''
+    view['noncsv_plain'] = plain_render_file(getf) if view['noncsv_view'] == 'plain' else ''
 
   if getf.endswith('.csv'):
     view['csvshow'] = html_render_csv(getf)
