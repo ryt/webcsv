@@ -2,23 +2,6 @@
 
 # This app uses Flask & Gunicorn with ryt/runapp for deployment.
 
-# Create & start a deployment, gunicorn (daemon/process), with runapp:
-# $ cd webcsv
-# $ ./runapp start
-
-# Stop deployment/app process:
-# $ ./runapp stop
-
-# Check running deployment/app process:
-# $ ./runapp list
-
-# Restart deployment/app process:
-# $ ./runapp restart
-
-# If not running after restart, check & re-deploy:
-# $ ./runapp list
-# $ ./runapp start
-
 v = '0.0.1'
 
 """
