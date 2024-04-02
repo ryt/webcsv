@@ -1,6 +1,6 @@
 # webcsv: Simple CSV Web Viewer
 
-Simple python web app to view CSV files on the browser. The CSV data will be rendered as an HTML table. This app uses [Flask](https://github.com/flask/flask) & [Gunicorn](https://github.com/gunicorn/gunicorn) with [ryt/runapp](https://github.com/ryt/runapp) for deployment.
+Simple python web app to view CSV files on the browser. The CSV data will be rendered as an HTML table. This app uses [Flask](https://github.com/pallets/flask) & [Gunicorn](https://github.com/benoitc/gunicorn) with [ryt/runapp](https://github.com/ryt/runapp) for deployment.
 
 ![](images/screen-shot-3.png)
 ![](images/screen-shot-2.png)
@@ -9,8 +9,8 @@ Simple python web app to view CSV files on the browser. The CSV data will be ren
 
 Run the app with the default Flask development server on port 5000.
 
-```
-$ python3 webcsv.py
+```console
+python3 webcsv.py
 ```
 
 > Note: webcsv has been tested & deployed with Flask version 2.2.5, Python version 3.7.3, and Gunicorn version 21.2.0. Your versions may or may not be compatible so double check your versions if you experience any issues.
@@ -19,34 +19,34 @@ $ python3 webcsv.py
 
 Create & start a deployment, gunicorn (daemon/process), with runapp:
 
-```
-$ cd webcsv
-$ runapp start
+```console
+cd webcsv
+runapp start
 ```
 
 Stop deployment/app process:
 
-```
-$ runapp stop
+```console
+runapp stop
 ```
 
 Check running deployment/app process:
 
-```
-$ runapp list
+```console
+runapp list
 ```
 
 Restart deployment/app process:
 
-```
-$ runapp restart
+```console
+runapp restart
 ```
 
 If app is not running after restart, check & re-deploy:
 
-```
-$ runapp list
-$ runapp start
+```console
+runapp list
+runapp start
 ```
 
 ### Port Notes
@@ -65,11 +65,11 @@ As mentioned above, you can change the port and path in `webcsv.html` if you hav
 
 You can also create a Mac application named **webcsv.app** to use as the default app to open CSV files with using the following AppleScript. If you change the default port and/or want to use a different browser, make sure to modify the script as well.
 
-```
+```applescript
 on open (csvFiles)	set filePath to POSIX path of item 1 of csvFiles	tell application "Google Chrome"		activate		open location "http://127.0.0.1:8002/webcsv?f=" & filePath	end tellend open
 ```
 
 --
 
-<small>Copyright &copy; 2024 Ray Mentose.</small>
+<sub>Copyright &copy; 2024 Ray Mentose.</sub>
 
