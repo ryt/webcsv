@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>webcsv: {{ view.getf if view.getf else 'Simple CSV Web Viewer' }}</title>
+  <title>webcsv: {{ view.getf_html if view.getf_html else 'Simple CSV Web Viewer' }}</title>
   <style>
     body { margin: 0; font: 14px sans-serif; }
     h2 { margin: 0; padding: 8px 16px; background: #ddd; border-bottom: 1px solid #bbb; }
@@ -34,18 +34,18 @@
   {% if view.show_header %}
   <h2>
     <a href="/?f=/">webcsv</a>
-    <a class="hide" href="?f={{ view.getf }}{{ view.getview_qs }}&amp;hide=true">&#10548;</a>
+    <a class="hide" href="?f={{ view.getf_html_sp }}{{ view.getview_query }}&amp;hide=true">&#10548;</a>
   </h2>
 
   <div class="address">
-    Path: {% for a in view.address %} <span>{{ a[2] }}</span> <a href="?f={{ a[1] }}">{{ a[0] }}</a>{% endfor %}
+    Path: {% for a in view.address %} <span>{{ a.separator }}</span> <a href="?f={{ a.path }}">{{ a.name }}</a>{% endfor %}
   </div>
   {% endif %}
 
-  {% if view.newfs %}
+  {% if view.listfs %}
   <div class="dir-list">
-    {% for f in view.newfs %}
-      <div class="dir-item"><a href="?f={{ f[1] }}" class="{% if f[0].startswith('.') %}dotfiles{% endif %}">{{ f[0] }}</a></div>
+    {% for f in view.listfs %}
+      <div class="dir-item"><a href="?f={{ f.path }}" class="{% if f.name.startswith('.') %}dotfiles{% endif %}">{{ f.name }}</a></div>
     {% endfor %}
   </div>
   {% endif %}
@@ -61,7 +61,7 @@
       {% if view.noncsv_plain %}
       <pre class="noncsv-plain">{{ view.noncsv_plain }}</pre>
       {% else %}
-      <div class="error">Not a CSV file. <small>[<a href="?f={{ view.getf }}&amp;view=plain">view</a>]</small></div>
+      <div class="error">Not a CSV file. <small>[<a href="?f={{ view.getf_html_sp }}&amp;view=plain">view</a>]</small></div>
       {% endif %}
     </div>
   {% endif %}
