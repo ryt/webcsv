@@ -13,14 +13,6 @@ Run the app with the default Flask development server on port 5000.
 python3 webcsv.py
 ```
 
-#### Options
-
-By default, webcsv will show a directory listing of any (accessible) directory on the system that is passed to the `f` parameter in the url. To limit the path and set an absoltue parent directory, use the `limitpath` option in `runapp.conf`.
-
-```ini
-limitpath = /home/user/Documents/project-dir/
-```
-
 > Note: webcsv has been tested & deployed with Flask version 2.2.5, Python version 3.7.3, and Gunicorn version 21.2.0. Your versions may or may not be compatible so double check your versions if you experience any issues.
 
 ## Deployment Instructions
@@ -55,6 +47,14 @@ If app is not running after restart, check & re-deploy:
 ```console
 runapp list
 runapp start
+```
+
+#### Directory Listing Options
+
+By default, webcsv will show a directory listing of any (accessible) directory on the system that is passed to the `f` parameter in the url. To limit the path and set an absoltue parent directory, use the `limitpath` option in `runapp.conf`.
+
+```ini
+limitpath = /home/user/Documents/project-dir/
 ```
 
 ### Port Notes
