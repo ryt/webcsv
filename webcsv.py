@@ -2,7 +2,7 @@
 
 # This app uses Flask & Gunicorn with ryt/runapp for deployment.
 
-v = '0.0.1'
+v = '0.0.2'
 
 """
 Copyright (C) 2024 Ray Mentose.
@@ -29,7 +29,8 @@ def html_return_error(text):
 
 def html_render_csv(path):
 
-  render = ''
+  render   = ''
+  path_mod = remove_limitpath(path)
 
   try:
 
@@ -58,30 +59,31 @@ def html_render_csv(path):
       render = html_table
 
   except FileNotFoundError:
-    render = html_return_error(f"The file '{rl(path)}' does not exist.")
+    render = html_return_error(f"The file '{path_mod}' does not exist.")
 
   except IOError:
-    render = html_return_error(f"Error reading the file '{rl(path)}'.")
+    render = html_return_error(f"Error reading the file '{path_mod}'.")
 
   return render
 
 
 def plain_render_file(path):
 
-  render = ''
+  render   = ''
+  path_mod = remove_limitpath(path)
 
   try:
     with open(path, 'r') as file:
       try:
         render = file.read()
       except:
-        render = f"The file '{rl(path)}' is not in text format."
+        render = f"The file '{path_mod}' is not in text format."
 
   except FileNotFoundError:
-    render = f"The file '{rl(path)}' does not exist."
+    render = f"The file '{path_mod}' does not exist."
 
   except IOError:
-    render = f"Error reading the file '{rl(path)}'."
+    render = f"Error reading the file '{path_mod}'."
 
   return render
 
@@ -104,10 +106,8 @@ def add_limitpath(path):
 
 def sanitize_path(path):
   """Sanitize path for urls: 1. apply limitpath mods, 2. escape &'s and spaces"""
-  return quote(rl(path), safe='/')
+  return quote(remove_limitpath(path), safe='/')
 
-rl = remove_limitpath
-al = add_limitpath
 sp = sanitize_path
 
 
@@ -131,13 +131,13 @@ def index(subpath=None):
         limitpath = ''
   # -- end: parse runapp config
 
-  print(limitpath)
+  # limitpath = '/usr/local/share/' # for testing
 
   getf      = request.args.get('f') or ''
   getview   = request.args.get('view') or ''
 
-  getf_html   = rl(getf) # limitpath mods applied
-  getf        = al(getf)
+  getf_html   = remove_limitpath(getf) # limitpath mods applied
+  getf        = add_limitpath(getf)
 
   view = {}
   listfs = []
