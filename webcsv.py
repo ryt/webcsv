@@ -23,6 +23,23 @@ from configparser import ConfigParser
 app = Flask(__name__)
 
 limitpath = ''
+app_path  = '/webcsv'
+
+# -- start: parse runapp.conf (if it exists) and make modifications
+conf = 'runapp.conf'
+if os.path.exists(conf):
+  with open(conf) as cf:
+    config = ConfigParser()
+    config.read_file(itertools.chain(['[global]'], cf), source=conf)
+    try:
+      limitpath = config.get('global', 'limitpath').rstrip('/') + '/'
+    except:
+      limitpath = ''
+    try:
+      app_path = config.get('global', 'app_path')
+    except:
+      app_path = app_path
+# -- end: parse runapp config
 
 def html_return_error(text):
   return f'<div class="error">{text}</div>'
@@ -87,6 +104,13 @@ def plain_render_file(path):
 
   return render
 
+def get_query(param):
+  """Get query string param (if exists & has value) or empty string"""
+  try:
+    return request.args.get(param) if request.args.get(param) else ''
+  except:
+    return ''
+
 def remove_from_start(sub, string):
   """Remove sub from beginning of string if string starts with sub"""
   if string.startswith(sub):
@@ -111,35 +135,24 @@ def sanitize_path(path):
 sp = sanitize_path
 
 
-@app.route('/')
-@app.route('/webcsv')
+#@app.route('/')
+@app.route(app_path, methods=['GET'])
 
 def index(subpath=None):
 
-  # if limitpath is set, the internal path will be limited to that path as the absolute parent
-  global limitpath
+  # if limitpath is set in runapp.conf, the directory listing view for the client/browser will be limited to that path as the absolute parent
+  # if app_path is set in runapp.conf, that path will be used to route index page of the app
 
-  # -- start: parse runapp.conf (if it exists) and modify limitpath (if it exists)
-  conf = 'runapp.conf'
-  if os.path.exists(conf):
-    with open(conf) as cf:
-      config = ConfigParser()
-      config.read_file(itertools.chain(['[global]'], cf), source=conf)
-      try:
-        limitpath = config.get('global', 'limitpath').rstrip('/') + '/'
-      except:
-        limitpath = ''
-  # -- end: parse runapp config
+  global limitpath, app_path
 
   # limitpath = '/usr/local/share/' # for testing
 
-  getf      = request.args.get('f') or ''
-  getview   = request.args.get('view') or ''
+  getf        = get_query('f')
+  getview     = get_query('view')
+  getf_html   = remove_limitpath(getf)  # limitpath mods for client/browser side view
+  getf        = add_limitpath(getf)     # limitpath mods for internal processing
 
-  getf_html   = remove_limitpath(getf) # limitpath mods applied
-  getf        = add_limitpath(getf)
-
-  view = {}
+  view   = { 'app_path' : app_path }
   listfs = []
 
   if os.path.isdir(getf):
@@ -165,14 +178,14 @@ def index(subpath=None):
     view['csvshow'] = html_render_csv(getf)
     view['noncsv']  = False
 
-  address = []
+  address   = []
   addrbuild = ''
   if getf_html: 
     for path in getf_html.strip('/').split('/'):
       addrbuild += f'/{path}'
       address.append({ 
-        'name' : f'{path}', 
-        'path' : sp(f'{addrbuild}'),
+        'name'      : f'{path}', 
+        'path'      : sp(f'{addrbuild}'),
         'separator' : '/'
       })
 
@@ -181,12 +194,8 @@ def index(subpath=None):
   view['getf_html']       = getf_html
   view['getf_html_sp']    = sp(getf_html)
   view['getview_query']   = f'&view={getview}' if getview else ''
-  view['show_header']     = True
+  view['show_header']     = False if get_query('hide') == 'true' else True
 
-  hide = request.args.get('hide')
-
-  if hide and hide == 'true':
-    view['show_header'] = False
 
   return render_template('template.html', view=view)
 
