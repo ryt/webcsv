@@ -135,7 +135,6 @@ def sanitize_path(path):
 sp = sanitize_path
 
 
-#@app.route('/')
 @app.route(app_path, methods=['GET'])
 
 def index(subpath=None):
