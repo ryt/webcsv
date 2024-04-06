@@ -54,7 +54,7 @@ runapp start
 By default, webcsv will show a directory listing of any (accessible) directory on the system that is passed to the `f` parameter in the url. To limit the path and set an absoltue parent directory, use the `limitpath` option in `runapp.conf`.
 
 ```ini
-limitpath = /home/user/Documents/project-dir/
+limitpath = /home/user/project/
 ```
 
 ### Port Notes
