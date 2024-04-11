@@ -54,8 +54,8 @@ def html_render_csv(path):
     with open(path, 'r') as file:
       content = file.read()
       html_table = '<table class="csv-table">\n'
-
-      csv_reader = csv.reader(content.splitlines())
+      # added {skiinitialspace=True} to fix issue with commas inside quoted cells
+      csv_reader = csv.reader(content.splitlines(), skipinitialspace=True)
       headers = next(csv_reader)
 
       html_table += '<tr>'
