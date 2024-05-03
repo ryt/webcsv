@@ -78,8 +78,8 @@ def html_render_csv(path):
   except FileNotFoundError:
     render = html_return_error(f"The file '{path_mod}' does not exist.")
 
-  except IOError:
-    render = html_return_error(f"Error reading the file '{path_mod}'.")
+  except:
+    render = html_return_error(f"The file '{path_mod}' could not be parsed.")
 
   return render
 
