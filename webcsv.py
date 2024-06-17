@@ -52,8 +52,22 @@ def html_render_csv(path):
   try:
 
     with open(path, 'r') as file:
+
+      getfilter = get_query('filter')
+      html_table = ''
+
       content = file.read()
-      html_table = '<table class="csv-table">\n'
+
+      if getfilter:
+        filter_parts = getfilter.split(':')
+        filter_key = filter_parts[0]
+        filter_val = filter_parts[1]
+        html_table = f'<div class="top-filter">Applying filter: <b>{filter_key}</b> = <b>{filter_val}</b></div>'
+
+        filter_col_num = int(''.join(filter(str.isdigit, filter_key)))
+
+
+      html_table += '<table class="csv-table">\n'
       # added {skiinitialspace=True} to fix issue with commas inside quoted cells
       csv_reader = csv.reader(content.splitlines(), skipinitialspace=True)
       headers = next(csv_reader)
@@ -65,12 +79,29 @@ def html_render_csv(path):
       html_table += '</tr>\n'
 
       for row in csv_reader:
-        html_table += '<tr>'
-        for cell in row:
-          cell = html.escape(cell)
-          html_table += f'<td>{cell}</td>'
-        html_table += '</tr>\n'
+        display_row = True
+
+        if getfilter:
+          display_row = False
+          table_row = '<tr>'
+          for i, cell in enumerate(row):
+            cell = html.escape(cell)
+            if filter_col_num == i+1 and cell == filter_val:
+              display_row = True
+            table_row += f'<td>{cell}</td>'
+          table_row += '</tr>\n'
+
+        else:
+          table_row = '<tr>'
+          for cell in row:
+            cell = html.escape(cell)
+            table_row += f'<td>{cell}</td>'
+          table_row += '</tr>\n'
+
+        if display_row:
+          html_table += table_row
       
+
       html_table += '</table>'
 
       render = html_table
