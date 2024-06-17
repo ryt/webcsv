@@ -41,100 +41,6 @@ if os.path.exists(conf):
       app_path = app_path
 # -- end: parse runapp config
 
-def html_return_error(text):
-  return f'<div class="error">{text}</div>'
-
-def html_render_csv(path):
-
-  render   = ''
-  path_mod = remove_limitpath(path)
-
-  try:
-
-    with open(path, 'r') as file:
-
-      getfilter = get_query('filter')
-      html_table = ''
-
-      content = file.read()
-
-      if getfilter:
-        filter_parts = getfilter.split(':')
-        filter_key = filter_parts[0]
-        filter_val = filter_parts[1]
-        html_table = f'<div class="top-filter">Applying filter: <b>{filter_key}</b> = <b>{filter_val}</b></div>'
-
-        filter_col_num = int(''.join(filter(str.isdigit, filter_key)))
-
-
-      html_table += '<table class="csv-table">\n'
-      # added {skiinitialspace=True} to fix issue with commas inside quoted cells
-      csv_reader = csv.reader(content.splitlines(), skipinitialspace=True)
-      headers = next(csv_reader)
-
-      html_table += '<tr>'
-      for header in headers:
-        header = html.escape(header)
-        html_table += f'<th>{header}</th>'
-      html_table += '</tr>\n'
-
-      for row in csv_reader:
-        display_row = True
-
-        if getfilter:
-          display_row = False
-          table_row = '<tr>'
-          for i, cell in enumerate(row):
-            cell = html.escape(cell)
-            if filter_col_num == i+1 and cell == filter_val:
-              display_row = True
-            table_row += f'<td>{cell}</td>'
-          table_row += '</tr>\n'
-
-        else:
-          table_row = '<tr>'
-          for cell in row:
-            cell = html.escape(cell)
-            table_row += f'<td>{cell}</td>'
-          table_row += '</tr>\n'
-
-        if display_row:
-          html_table += table_row
-      
-
-      html_table += '</table>'
-
-      render = html_table
-
-  except FileNotFoundError:
-    render = html_return_error(f"The file '{path_mod}' does not exist.")
-
-  except:
-    render = html_return_error(f"The file '{path_mod}' could not be parsed.")
-
-  return render
-
-
-def plain_render_file(path):
-
-  render   = ''
-  path_mod = remove_limitpath(path)
-
-  try:
-    with open(path, 'r') as file:
-      try:
-        render = file.read()
-      except:
-        render = f"The file '{path_mod}' is not in text format."
-
-  except FileNotFoundError:
-    render = f"The file '{path_mod}' does not exist."
-
-  except IOError:
-    render = f"Error reading the file '{path_mod}'."
-
-  return render
-
 def get_query(param):
   """Get query string param (if exists & has value) or empty string"""
   try:
@@ -165,6 +71,153 @@ def sanitize_path(path):
 
 sp = sanitize_path
 
+def parse_filter(qfilter):
+  """Parse a filter (query) string and convert it into dictionary with keys, values, & attributes"""
+  filter_dicts = []
+  filter_instances = qfilter.split(',')
+  for f in filter_instances:
+    filter_parts = f.split(':')
+    filter_key = filter_parts[0]
+    filter_val = filter_parts[1]
+    filter_col_num = int(''.join(filter(str.isdigit, filter_key)))
+    filter_dicts.append({
+      'key'     : filter_key,
+      'col_num' : filter_col_num,
+      'val'     : filter_val
+    })
+
+  return filter_dicts
+
+def filter_compare(csv_value, search_value):
+  """Compares csv_value & search_value and determines if the filters match or not"""
+
+  # quoted strings == exact match
+
+  if (search_value.startswith('"') and search_value.endswith('"')) or (search_value.startswith("'") and search_value.endswith("'")):
+    if search_value.strip('\'"') == csv_value:
+      return True
+    else:
+      return False
+
+  # non-quoted strings = search
+
+  elif search_value in csv_value:
+    return True
+
+  return False
+
+def html_return_error(text):
+  return f'<div class="error">{text}</div>'
+
+def html_render_csv(path):
+
+  render   = ''
+  path_mod = remove_limitpath(path)
+
+  #try:
+  if True:
+
+    with open(path, 'r') as file:
+
+      getfilter = get_query('filter')
+      html_table = ''
+
+      content = file.read()
+
+      if getfilter:
+        filter_insts = parse_filter(getfilter)
+        filter_ihtml = [f"<b>{f['key']}</b> = <b>{f['val']}</b>" for f in filter_insts]
+        html_table = f'<div class="top-filter">Applying filter: {", ".join(filter_ihtml)}. Filtered rows: ##__filtered_rows__##.</div>'
+
+
+      html_table += '<table class="csv-table">\n'
+      # added {skiinitialspace=True} to fix issue with commas inside quoted cells
+      csv_reader = csv.reader(content.splitlines(), skipinitialspace=True)
+      headers = next(csv_reader)
+
+      html_table += '<tr>'
+      for header in headers:
+        header = html.escape(header)
+        html_table += f'<th>{header}</th>'
+      html_table += '</tr>\n'
+
+      filtered_rows = 0
+
+      for row in csv_reader:
+        display_row = True
+
+        if getfilter:
+          display_row = False
+          fi = filter_insts
+          table_row = '<tr>'
+
+          if len(fi) > 1: # multiple filters (AND search)
+            found_count = 0
+
+            for fx in fi:
+              if 0 <= fx['col_num']-1 < len(row) and filter_compare(row[fx['col_num']-1], fx['val']):
+                found_count += 1 # add 1 for each found filter
+
+            if found_count == len(fi):
+              display_row = True
+
+          else: # single filter
+            if 0 <= fi[0]['col_num']-1 < len(row) and filter_compare(row[fi[0]['col_num']-1], fi[0]['val']):
+              display_row = True
+
+
+          for cell in row:
+            cell = html.escape(cell)
+            table_row += f'<td>{cell}</td>'
+
+          table_row += '</tr>\n'
+
+        else:
+          table_row = '<tr>'
+          for cell in row:
+            cell = html.escape(cell)
+            table_row += f'<td>{cell}</td>'
+          table_row += '</tr>\n'
+
+        if display_row:
+          filtered_rows += 1
+          html_table += table_row
+      
+
+      html_table += '</table>'
+
+      render = html_table.replace('##__filtered_rows__##', str(filtered_rows))
+
+  elif False:#except FileNotFoundError:
+    render = html_return_error(f"The file '{path_mod}' does not exist.")
+
+  else:#except:
+    render = html_return_error(f"The file '{path_mod}' could not be parsed.")
+
+  return render
+
+
+def plain_render_file(path):
+
+  render   = ''
+  path_mod = remove_limitpath(path)
+
+  try:
+    with open(path, 'r') as file:
+      try:
+        render = file.read()
+      except:
+        render = f"The file '{path_mod}' is not in text format."
+
+  except FileNotFoundError:
+    render = f"The file '{path_mod}' does not exist."
+
+  except IOError:
+    render = f"Error reading the file '{path_mod}'."
+
+  return render
+
+
 
 @app.route(app_path, methods=['GET'])
 
@@ -179,10 +232,14 @@ def index(subpath=None):
 
   getf        = get_query('f')
   getview     = get_query('view')
+  getfilter   = get_query('filter')
   getf_html   = remove_limitpath(getf)  # limitpath mods for client/browser side view
   getf        = add_limitpath(getf)     # limitpath mods for internal processing
 
-  view   = { 'app_path' : app_path }
+  view   = { 
+    'app_path'  : app_path, 
+    'getfilter' : getfilter 
+  }
   listfs = []
 
   if os.path.isdir(getf):
@@ -224,6 +281,7 @@ def index(subpath=None):
   view['getf_html']       = getf_html
   view['getf_html_sp']    = sp(getf_html)
   view['getview_query']   = f'&view={getview}' if getview else ''
+  view['getfilter_query'] = f'&filter={getfilter}' if getfilter else ''
   view['show_header']     = False if get_query('hide') == 'true' else True
 
 
