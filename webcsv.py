@@ -114,8 +114,7 @@ def html_render_csv(path):
   render   = ''
   path_mod = remove_limitpath(path)
 
-  #try:
-  if True:
+  try:
 
     with open(path, 'r') as file:
 
@@ -188,10 +187,10 @@ def html_render_csv(path):
 
       render = html_table.replace('##__filtered_rows__##', str(filtered_rows))
 
-  elif False:#except FileNotFoundError:
+  except FileNotFoundError:
     render = html_return_error(f"The file '{path_mod}' does not exist.")
 
-  else:#except:
+  except:
     render = html_return_error(f"The file '{path_mod}' could not be parsed.")
 
   return render
