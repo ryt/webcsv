@@ -15,9 +15,11 @@ python3 webcsv.py
 
 > Note: webcsv has been tested & deployed with Flask version 2.2.5, Python version 3.7.3, and Gunicorn version 21.2.0. Your versions may or may not be compatible so double check your versions if you experience any issues.
 
-## Deployment Instructions
+## Deployment Instructions (with runapp)
 
-Create & start a deployment, gunicorn (daemon/process), with [runapp](https://github.com/ryt/runapp):
+> Note: these instructions are only necessary if you're using [runapp](https://github.com/ryt/runapp) to deploy the application. If you're using gunicorn by itself or with a custom deployment process, you may skip these instructions.
+
+Create & start a deployment, gunicorn (daemon/process):
 
 ```console
 cd webcsv
@@ -51,10 +53,10 @@ runapp start
 
 #### Directory Listing Options
 
-By default, webcsv will show a directory listing of any (accessible) directory on the system that is passed to the `f` parameter in the url. To limit the path and set an absoltue parent directory, use the `limitpath` option in `runapp.conf`.
+By default, webcsv will show a directory listing of any (accessible) directory on the system that is passed to the `f` parameter in the url. To limit the path and set an absoltue parent directory, use the `limitpath` option in `config.py`.
 
-```ini
-limitpath = /home/user/project/
+```py
+'limitpath' : '/home/user/project/'
 ```
 
 ### Port Notes

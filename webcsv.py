@@ -2,7 +2,7 @@
 
 # This app uses Flask & Gunicorn with ryt/runapp for deployment.
 
-v = '0.0.2'
+v = '0.0.3'
 
 """
 Copyright (C) 2024 Ray Mentose.
@@ -12,34 +12,37 @@ Latest version of the project on Github at: https://github.com/ryt/webcsv
 import os
 import csv
 import html
+import config
 import itertools
 
 from flask import Flask
 from flask import request
 from urllib.parse import quote
 from flask import render_template
-from configparser import ConfigParser
 
 app = Flask(__name__)
+
+# -- start: parse config parameters from config.py and set values
+
+# default config values
 
 limitpath = ''
 app_path  = '/webcsv'
 
-# -- start: parse runapp.conf (if it exists) and make modifications
-conf = 'runapp.conf'
-if os.path.exists(conf):
-  with open(conf) as cf:
-    config = ConfigParser()
-    config.read_file(itertools.chain(['[global]'], cf), source=conf)
-    try:
-      limitpath = config.get('global', 'limitpath').rstrip('/') + '/'
-    except:
-      limitpath = ''
-    try:
-      app_path = config.get('global', 'app_path')
-    except:
-      app_path = app_path
-# -- end: parse runapp config
+# read & modify config values
+
+if 'limitpath' in config.config:
+  limitpath = config.config['limitpath'].rstrip('/') + '/'
+else:
+  limitpath = ''
+
+if 'app_path' in config.config:
+  app_path = config.config['app_path']
+else:
+  app_path = app_path
+
+# -- end: parse config parameters
+
 
 def get_query(param):
   """Get query string param (if exists & has value) or empty string"""
@@ -222,8 +225,8 @@ def plain_render_file(path):
 
 def index(subpath=None):
 
-  # if limitpath is set in runapp.conf, the directory listing view for the client/browser will be limited to that path as the absolute parent
-  # if app_path is set in runapp.conf, that path will be used to route index page of the app
+  # if limitpath is set in config, the directory listing view for the client/browser will be limited to that path as the absolute parent
+  # if app_path is set in config, that path will be used to route index page of the app
 
   global limitpath, app_path
 
