@@ -17,7 +17,7 @@ python3 webcsv.py
 
 ## Deployment Instructions (with runapp)
 
-> Note: these instructions are only necessary if you're using [runapp](https://github.com/ryt/runapp) to deploy the application. If you're using gunicorn by itself or with a custom deployment process, you may skip these instructions.
+> Note: these instructions are only necessary if you're using [runapp](https://github.com/ryt/runapp) to deploy the application. If you're using gunicorn by itself or are using a custom deployment process, you may skip these instructions.
 
 Create & start a deployment, gunicorn (daemon/process):
 
