@@ -17,12 +17,11 @@ config = {
   # included within the html code will be rendered and processed by the browser as well. Make sure the html files are
   # safe to be processed if you enable the 'parse_html' option.
 
-  'parse_html'  : True,
+  'parse_html'  : False,
 
   # Set 'parse_markdown' to True to enable webcsv to parse & render markdown files with a default Github flavored style.
   # If enabled, the app will use the marko library: https://marko-py.readthedocs.io/en/latest/ to parse '.md' files.
 
   'parse_markdown'  : True,
-  #'parse_markdown'  : False,
 
 }
