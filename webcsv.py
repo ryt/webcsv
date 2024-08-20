@@ -2,7 +2,7 @@
 
 # This app uses Flask & Gunicorn with ryt/runapp for deployment.
 
-v = '0.0.3'
+v = '0.0.4'
 
 """
 Copyright (C) 2024 Ray Mentose.
