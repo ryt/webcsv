@@ -28,20 +28,28 @@ app = Flask(__name__)
 
 limitpath = ''
 app_path  = '/webcsv'
+parse_markdown  = False
+parse_html      = False
 
 # read & modify config values
 
 if 'limitpath' in config.config:
   limitpath = config.config['limitpath'].rstrip('/') + '/'
-else:
-  limitpath = ''
 
 if 'app_path' in config.config:
   app_path = config.config['app_path']
-else:
-  app_path = app_path
+
+if 'parse_markdown' in config.config:
+  parse_markdown = config.config['parse_markdown']
+
+if 'parse_html' in config.config:
+  parse_html = config.config['parse_html']
 
 # -- end: parse config parameters
+
+# markdown options
+if parse_markdown == True:
+  from marko.ext.gfm import gfm
 
 
 def get_query(param):
@@ -220,6 +228,31 @@ def plain_render_file(path):
   return render
 
 
+def noncsv_render_file(path, ftype):
+
+  render   = ''
+  path_mod = remove_limitpath(path)
+
+  try:
+    with open(path, 'r') as file:
+      try:
+        if ftype == 'markdown':
+          render = f'<article class="markdown-body">{gfm(file.read())}</article>'
+        elif ftype == 'html':
+          render = file.read()
+        else:
+          render = f"The file '{path_mod}' is not in supported format."
+      except:
+        render = f"The file '{path_mod}' is not in a supported format."
+
+  except FileNotFoundError:
+    render = f"The file '{path_mod}' does not exist."
+
+  except IOError:
+    render = f"Error reading the file '{path_mod}'."
+
+  return render
+
 
 @app.route(app_path, methods=['GET'])
 
@@ -260,8 +293,23 @@ def index(subpath=None):
             'path' : sp(f'{parpt}/{f}')
           })
   else:
-    view['noncsv'] = True
-    view['noncsv_plain'] = plain_render_file(getf) if getview == 'plain' else ''
+    # additional non-csv rendering options
+    # markdown
+    if parse_markdown == True and getf.endswith('.md'):
+      view['noncsv'] = True
+      view['noncsv_markdown'] = noncsv_render_file(getf, 'markdown')
+      with open('assets/github-markdown.css', 'r') as github_markdown:
+        view['markdown_css'] = github_markdown.read()
+    # html
+    elif parse_html == True and (getf.endswith('.htm') or getf.endswith('.html')):
+      view['noncsv'] = True
+      view['noncsv_html'] = noncsv_render_file(getf, 'html')
+    # plain
+    else:
+      view['noncsv'] = True
+      view['noncsv_plain'] = plain_render_file(getf) if getview == 'plain' else ''
+
+
 
   if getf.endswith('.csv'):
     view['csvshow'] = html_render_csv(getf)

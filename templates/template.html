@@ -4,14 +4,15 @@
   <meta charset="UTF-8">
   <title>webcsv: {{ view.getf_html if view.getf_html else 'Simple CSV Web Viewer' }}</title>
   <style>
-    body { margin: 0; font: 14px sans-serif; }
-    h2 { margin: 0; padding: 8px 16px; background: #ddd; border-bottom: 1px solid #bbb; }
-    h2 a { color:#000; text-decoration: none; }
-    h2 a.hide { font-size: 12px; font-weight: bold; position: relative; top: -2px; }
-    h2 a.hide:hover { text-decoration: none; }
-    a { color: #000; text-decoration: none; }
-    a:hover { text-decoration: underline; }
-    a.dotfiles { color:#777; }
+    body { margin: 0; padding: 0; }
+    .webcsv { font: 14px sans-serif; }
+    .webcsv-h2 { font-family: sans-serif; margin: 0; padding: 8px 16px; background: #ddd; border-bottom: 1px solid #bbb; }
+    .webcsv-h2 a { color:#000; text-decoration: none; }
+    .webcsv-h2 a.hide { font-size: 12px; font-weight: bold; position: relative; top: -2px; }
+    .webcsv-h2 a.hide:hover { text-decoration: none; }
+    .webcsv a { color: #000; text-decoration: none; }
+    .webcsv a:hover { text-decoration: underline; }
+    .webcsv a.dotfiles { color:#777; }
     .address { font-family: monospace; padding: 8px 16px; border-bottom: 1px solid #aaa; background: #eee; }
     .address a { text-decoration: underline; }
     .address span { color:#777; }
@@ -28,23 +29,28 @@
     .csv-table th, .csv-table td { border: 1px solid #ccc; padding: 8px; font-weight: normal; }
     .csv-table th { background: linear-gradient(#f9f9f9 0% 50%, #f2f2f2 50% 100%); }
     .csv-table td { }
+  {% if view.markdown_css %}
+    /* Markdown CSS from: https://sindresorhus.com/github-markdown-css/github-markdown.css */
+    .show-markdown { min-width: 200px; max-width: 830px; margin: 20px auto 0; padding:8px 32px 16px; border:1px solid #ddd; }
+    {{ view.markdown_css }}
+  {% endif %}
   </style>
 </head>
 <body>
 
   {% if view.show_header %}
-  <h2>
+  <h2 class="webcsv-h2">
     <a href="{{ view.app_path }}?f=/">webcsv</a>
     <a class="hide" href="?f={{ view.getf_html_sp }}{{ view.getview_query }}{{ view.getfilter_query }}&amp;hide=true">&#10548;</a>
   </h2>
 
-  <div class="address">
+  <div class="webcsv address">
     Path: {% for a in view.address %} <span>{{ a.separator }}</span> <a href="?f={{ a.path }}">{{ a.name }}</a>{% endfor %}
   </div>
   {% endif %}
 
   {% if view.listfs %}
-  <div class="dir-list">
+  <div class="webcsv dir-list">
     {% for f in view.listfs %}
       <div class="dir-item"><a href="?f={{ f.path }}" class="{% if f.name.startswith('.') %}dotfiles{% endif %}">{{ f.name }}</a></div>
     {% endfor %}
@@ -52,19 +58,25 @@
   {% endif %}
 
   {% if view.csvshow %}
-    <div class="file-show">
+    <div class="webcsv file-show">
       {{ view.csvshow | safe }}
     </div>
   {% endif %}
 
   {% if view.noncsv %}
-    <div class="dir-list">
-      {% if view.noncsv_plain %}
-      <pre class="noncsv-plain">{{ view.noncsv_plain }}</pre>
-      {% else %}
-      <div class="error">Not a CSV file. <small>[<a href="?f={{ view.getf_html_sp }}&amp;view=plain">view</a>]</small></div>
-      {% endif %}
-    </div>
+    {% if view.noncsv_markdown %}
+      <div class="show-markdown">{{ view.noncsv_markdown | safe }}</div>
+    {% elif view.noncsv_html %}
+      <div class="show-html">{{ view.noncsv_html | safe }}</div>
+    {% else %}
+      <div class="webcsv dir-list">
+        {% if view.noncsv_plain %}
+          <pre class="noncsv-plain">{{ view.noncsv_plain }}</pre>
+        {% else %}
+          <div class="error">Not a CSV file. <small>[<a href="?f={{ view.getf_html_sp }}&amp;view=plain">view</a>]</small></div>
+        {% endif %}
+      </div>
+    {% endif %}
   {% endif %}
 
 </body>

@@ -59,6 +59,14 @@ By default, webcsv will show a directory listing of any (accessible) directory o
 'limitpath' : '/home/user/project/'
 ```
 
+#### Additional Rendering Options
+
+Markdown and HTML files can additionally be parsed and rendered using the following options: `parse_markdown` and `parse_html`. If you enable the `parse_markdown` option by setting it to `True`, you'll need to install the [marko](https://marko-py.readthedocs.io/en/latest/) library to your python libraries. 
+
+```console
+$ pip3 install marko
+```
+
 ### Port Notes
 
 1. When deployed with Gunicorn, the app uses port `8002` by default. You can change this by editing `runapp.conf` as well as `webcsv.html`.
