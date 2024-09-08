@@ -24,4 +24,9 @@ config = {
 
   'parse_markdown'  : True,
 
+  # Set 'parse_rst' to True to enable webcsv to parse & render rst (reStructuredText) files with a default Github flavored style.
+  # If enabled, the app will use the docutils library: https://docutils.sourceforge.io/rst.html to parse '.rst' files.
+
+  'parse_rst'  : True,
+
 }

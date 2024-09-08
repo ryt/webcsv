@@ -33,6 +33,11 @@
     /* Markdown CSS from: https://sindresorhus.com/github-markdown-css/github-markdown.css */
     .show-markdown { min-width: 200px; max-width: 830px; margin: 20px auto 40px; padding:8px 32px 16px; border:1px solid #ddd; }
     {{ view.markdown_css }}
+  {% elif view.rst_css %}
+    /* RST Styling (via Markdown) CSS from: https://sindresorhus.com/github-markdown-css/github-markdown.css */
+    .markdown-body table { border-width: 0; }
+    .show-rst { min-width: 200px; max-width: 830px; margin: 20px auto 40px; padding:8px 32px 16px; border:1px solid #ddd; }
+    {{ view.rst_css }}
   {% endif %}
   </style>
 </head>
@@ -68,6 +73,8 @@
   {% if view.noncsv %}
     {% if view.noncsv_markdown %}
       <div class="show-markdown">{{ view.noncsv_markdown | safe }}</div>
+    {% elif view.noncsv_rst %}
+      <div class="show-rst">{{ view.noncsv_rst | safe }}</div>
     {% elif view.noncsv_html %}
       <div class="show-html">{{ view.noncsv_html | safe }}</div>
     {% else %}

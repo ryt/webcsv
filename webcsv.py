@@ -28,8 +28,9 @@ app = Flask(__name__)
 
 limitpath = ''
 app_path  = '/webcsv'
-parse_markdown  = False
 parse_html      = False
+parse_markdown  = False
+parse_rst       = False
 
 # read & modify config values
 
@@ -39,17 +40,24 @@ if 'limitpath' in config.config:
 if 'app_path' in config.config:
   app_path = config.config['app_path']
 
+if 'parse_html' in config.config:
+  parse_html = config.config['parse_html']
+
 if 'parse_markdown' in config.config:
   parse_markdown = config.config['parse_markdown']
 
-if 'parse_html' in config.config:
-  parse_html = config.config['parse_html']
+if 'parse_rst' in config.config:
+  parse_rst = config.config['parse_rst']
 
 # -- end: parse config parameters
 
 # markdown options
 if parse_markdown == True:
   from marko.ext.gfm import gfm
+
+# rst options
+if parse_rst == True:
+  from docutils import core
 
 
 def get_query(param):
@@ -238,6 +246,8 @@ def noncsv_render_file(path, ftype):
       try:
         if ftype == 'markdown':
           render = f'<article class="markdown-body">{gfm(file.read())}</article>'
+        elif ftype == 'rst':
+          render = f'<article class="markdown-body">{core.publish_parts(source=file.read(), writer_name="html")["html_body"]}</article>'
         elif ftype == 'html':
           render = file.read()
         else:
@@ -300,6 +310,12 @@ def index(subpath=None):
       view['noncsv_markdown'] = noncsv_render_file(getf, 'markdown')
       with open('assets/github-markdown.css', 'r') as github_markdown:
         view['markdown_css'] = github_markdown.read()
+    # rst
+    if parse_rst == True and getf.endswith('.rst'):
+      view['noncsv'] = True
+      view['noncsv_rst'] = noncsv_render_file(getf, 'rst')
+      with open('assets/github-markdown.css', 'r') as github_markdown:
+        view['rst_css'] = github_markdown.read()
     # html
     elif parse_html == True and (getf.endswith('.htm') or getf.endswith('.html')):
       view['noncsv'] = True

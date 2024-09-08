@@ -61,11 +61,20 @@ By default, webcsv will show a directory listing of any (accessible) directory o
 
 #### Additional Rendering Options
 
-Markdown and HTML files can additionally be parsed and rendered using the following options: `parse_markdown` and `parse_html`. If you enable the `parse_markdown` option by setting it to `True`, you'll need to install the [marko](https://marko-py.readthedocs.io/en/latest/) library to your python libraries. 
+Markdown, RST (reStructuredText), and HTML files can additionally be parsed and rendered using the following options: `parse_markdown`, `parse_rst`, and `parse_html`.
+
+> If you enable the `parse_markdown` option by setting it to `True`, you'll need to install the [marko](https://marko-py.readthedocs.io/en/latest/) library to your python libraries. 
 
 ```console
 $ pip3 install marko
 ```
+
+> If you enable the `parse_rst` option by setting it to `True`, you'll need to install the [docutils](https://docutils.sourceforge.io/rst.html) library to your python libraries. 
+
+```console
+$ pip3 install docutils
+```
+
 
 ### Port Notes
 
