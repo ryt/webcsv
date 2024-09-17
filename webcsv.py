@@ -138,6 +138,7 @@ def html_render_csv(path):
     with open(path, 'r') as file:
 
       getfilter = get_query('filter')
+      getsort = get_query('sort')
       html_table = ''
 
       content = file.read()
@@ -160,6 +161,10 @@ def html_render_csv(path):
       html_table += '</tr>\n'
 
       filtered_rows = 0
+
+      if getsort:
+        if getsort == 'za':
+          csv_reader = reversed(list(csv_reader))
 
       for row in csv_reader:
         display_row = True
@@ -277,13 +282,15 @@ def index(subpath=None):
 
   getf        = get_query('f')
   getview     = get_query('view')
+  getsort     = get_query('sort')
   getfilter   = get_query('filter')
   getf_html   = remove_limitpath(getf)  # limitpath mods for client/browser side view
   getf        = add_limitpath(getf)     # limitpath mods for internal processing
 
   view   = { 
-    'app_path'  : app_path, 
-    'getfilter' : getfilter 
+    'app_path'  : app_path,
+    'getsort'   : getsort,
+    'getfilter' : getfilter,
   }
   listfs = []
 
@@ -347,6 +354,7 @@ def index(subpath=None):
   view['getf_html']       = getf_html
   view['getf_html_sp']    = sp(getf_html)
   view['getview_query']   = f'&view={getview}' if getview else ''
+  view['getsort_query']   = f'&sort={getsort}' if getsort else ''
   view['getfilter_query'] = f'&filter={getfilter}' if getfilter else ''
   view['show_header']     = False if get_query('hide') == 'true' else True
 
