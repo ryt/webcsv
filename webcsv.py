@@ -146,7 +146,7 @@ def html_render_csv(path):
       if getfilter:
         filter_insts = parse_filter(getfilter)
         filter_ihtml = [f"<b>{f['key']}</b> = <b>{f['val']}</b>" for f in filter_insts]
-        html_table = f'<div class="top-filter">Applying filter: {", ".join(filter_ihtml)}. Filtered rows: ##__filtered_rows__##.</div>'
+        html_table = f'<div class="top-filter hide-on-hide">Applying filter: {", ".join(filter_ihtml)}. Filtered rows: ##__filtered_rows__##.</div>'
 
 
       html_table += '<table class="csv-table">\n'
