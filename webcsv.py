@@ -281,7 +281,7 @@ def index(subpath=None):
   # limitpath = '/usr/local/share/' # for testing
 
   getf        = get_query('f')
-  getview     = get_query('view')
+  getshow     = get_query('show')
   getsort     = get_query('sort')
   getfilter   = get_query('filter')
   getf_html   = remove_limitpath(getf)  # limitpath mods for client/browser side view
@@ -291,10 +291,12 @@ def index(subpath=None):
     'app_path'  : app_path,
     'getsort'   : getsort,
     'getfilter' : getfilter,
+    'dirlist'   : False,
   }
   listfs = []
 
   if os.path.isdir(getf):
+    view['dirlist'] = True
     files = sorted(os.listdir(getf))
     parpt = getf.rstrip('/')
     if files:
@@ -311,29 +313,33 @@ def index(subpath=None):
           })
   else:
     # additional non-csv rendering options
-    # markdown
-    if parse_markdown == True and getf.endswith('.md'):
-      view['noncsv'] = True
-      view['noncsv_markdown'] = noncsv_render_file(getf, 'markdown')
-      with open('assets/github-markdown.css', 'r') as github_markdown:
-        view['markdown_css'] = github_markdown.read()
-    # rst
-    if parse_rst == True and getf.endswith('.rst'):
-      view['noncsv'] = True
-      view['noncsv_rst'] = noncsv_render_file(getf, 'rst')
-      with open('assets/github-markdown.css', 'r') as github_markdown:
-        view['rst_css'] = github_markdown.read()
-    # html
-    elif parse_html == True and (getf.endswith('.htm') or getf.endswith('.html')):
-      view['noncsv'] = True
-      view['noncsv_html'] = noncsv_render_file(getf, 'html')
+
     # plain
-    else:
+    if getshow == 'plain':
       view['noncsv'] = True
-      view['noncsv_plain'] = plain_render_file(getf) if getview == 'plain' else ''
+      view['show_plain'] = plain_render_file(getf)
 
+    else:
+      # markdown
+      if parse_markdown == True and getf.endswith('.md'):
+        view['noncsv'] = True
+        view['noncsv_markdown'] = noncsv_render_file(getf, 'markdown')
+        with open('assets/github-markdown.css', 'r') as github_markdown:
+          view['markdown_css'] = github_markdown.read()
+      # rst
+      elif parse_rst == True and getf.endswith('.rst'):
+        view['noncsv'] = True
+        view['noncsv_rst'] = noncsv_render_file(getf, 'rst')
+        with open('assets/github-markdown.css', 'r') as github_markdown:
+          view['rst_css'] = github_markdown.read()
+      # html
+      elif parse_html == True and (getf.endswith('.htm') or getf.endswith('.html')):
+        view['noncsv'] = True
+        view['noncsv_html'] = noncsv_render_file(getf, 'html')
+      else:
+        view['noncsv'] = True
 
-
+  # csv
   if getf.endswith('.csv'):
     view['csvshow'] = html_render_csv(getf)
     view['noncsv']  = False
@@ -353,7 +359,7 @@ def index(subpath=None):
   view['address']         = address
   view['getf_html']       = getf_html
   view['getf_html_sp']    = sp(getf_html)
-  view['getview_query']   = f'&view={getview}' if getview else ''
+  view['getshow_query']   = f'&view={getshow}' if getshow else ''
   view['getsort_query']   = f'&sort={getsort}' if getsort else ''
   view['getfilter_query'] = f'&filter={getfilter}' if getfilter else ''
   view['show_header']     = False if get_query('hide') == 'true' else True

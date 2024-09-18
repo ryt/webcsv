@@ -10,6 +10,7 @@
     .webcsv-h2 a { color:#000; text-decoration: none; }
     .webcsv-h2 a.hide { font-size: 12px; font-weight: bold; position: relative; top: -2px; }
     .webcsv-h2 a.hide:hover { text-decoration: none; }
+    .webcsv-h2 small { font-size:10px; font-weight:normal; font-family:monospace; position:relative; top:-2px; }
     .webcsv a { color: #000; text-decoration: none; }
     .webcsv a:hover { text-decoration: underline; }
     .webcsv a.dotfiles { color:#777; }
@@ -48,7 +49,14 @@
   <div class="webcsv">
     <h2 class="webcsv-h2">
       <a href="{{ view.app_path }}?f=/">webcsv</a>
-      <a class="hide" href="?f={{ view.getf_html_sp }}{{ view.getview_query }}{{ view.getsort_query }}{{ view.getfilter_query }}&amp;hide=true">&#10548;</a>
+      <a class="hide" href="?f={{ view.getf_html_sp }}{{ view.getshow_query }}{{ view.getsort_query }}{{ view.getfilter_query }}&amp;hide=true">&#10548;</a>
+      {% if not view.dirlist %}
+        {% if view.show_plain %}
+          <small>[<a href="?f={{ view.getf_html_sp }}">x</a>]</small>
+        {% else %}
+          <small>[<a href="?f={{ view.getf_html_sp }}&amp;show=plain">plain</a>]</small>
+        {% endif %}
+      {% endif %}
     </h2>
   </div>
 
@@ -80,10 +88,10 @@
       <div class="show-html">{{ view.noncsv_html | safe }}</div>
     {% else %}
       <div class="webcsv dir-list">
-        {% if view.noncsv_plain %}
-          <pre class="noncsv-plain">{{ view.noncsv_plain }}</pre>
+        {% if view.show_plain %}
+          <pre class="noncsv-plain">{{ view.show_plain }}</pre>
         {% else %}
-          <div class="error">Not a CSV file. <small>[<a href="?f={{ view.getf_html_sp }}&amp;view=plain">view</a>]</small></div>
+          <div class="error">Not a CSV file. <small>[<a href="?f={{ view.getf_html_sp }}&amp;show=plain">show</a>]</small></div>
         {% endif %}
       </div>
     {% endif %}
