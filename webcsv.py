@@ -359,7 +359,7 @@ def index(subpath=None):
   view['address']         = address
   view['getf_html']       = getf_html
   view['getf_html_sp']    = sp(getf_html)
-  view['getshow_query']   = f'&view={getshow}' if getshow else ''
+  view['getshow_query']   = f'&show={getshow}' if getshow else ''
   view['getsort_query']   = f'&sort={getsort}' if getsort else ''
   view['getfilter_query'] = f'&filter={getfilter}' if getfilter else ''
   view['show_header']     = False if get_query('hide') == 'true' else True
