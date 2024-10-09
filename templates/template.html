@@ -18,6 +18,7 @@
     .address a { text-decoration: underline; }
     .address span { color:#777; }
     .address a:last-child { font-weight: bold; }
+    .bold { font-weight: bold; }
     .error { color: #555; font-family: monospace; padding: 4px 0; }
     .noncsv-plain { margin: 0; padding: 4px 0; }
     .hide-on-hide { {% if not view.show_header %} display:none; {% endif %} }
@@ -56,6 +57,10 @@
         {% else %}
           <small>[<a href="?f={{ view.getf_html_sp }}&amp;show=plain">plain</a>]</small>
         {% endif %}
+        <small>[sort 
+          <a href="?f={{ view.getf_html_sp }}{{ view.getshow_query }}{{ view.getfilter_query }}" class="{{ 'bold' if not view.getsort else '' }}">a-z</a> 
+          <a href="?f={{ view.getf_html_sp }}{{ view.getshow_query }}{{ view.getfilter_query }}&amp;sort=za" class="{{ 'bold' if view.getsort == 'za' else '' }}">z-a</a>]
+        </small>
       {% endif %}
     </h2>
   </div>

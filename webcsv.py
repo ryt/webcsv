@@ -340,7 +340,7 @@ def index(subpath=None):
         view['noncsv'] = True
 
   # csv
-  if getf.endswith('.csv'):
+  if getf.endswith('.csv') and getshow != 'plain':
     view['csvshow'] = html_render_csv(getf)
     view['noncsv']  = False
 
