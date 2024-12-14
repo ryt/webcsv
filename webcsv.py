@@ -284,6 +284,7 @@ def index(subpath=None):
   getshow     = get_query('show')
   getsort     = get_query('sort')
   getfilter   = get_query('filter')
+  getdark     = get_query('dark')
   getf_html   = remove_limitpath(getf)  # limitpath mods for client/browser side view
   getf        = add_limitpath(getf)     # limitpath mods for internal processing
 
@@ -291,6 +292,7 @@ def index(subpath=None):
     'app_path'  : app_path,
     'getsort'   : getsort,
     'getfilter' : getfilter,
+    'getdark'   : getdark,
     'dirlist'   : False,
   }
   listfs = []
@@ -326,12 +328,18 @@ def index(subpath=None):
         view['noncsv_markdown'] = noncsv_render_file(getf, 'markdown')
         with open('assets/github-markdown.css', 'r') as github_markdown:
           view['markdown_css'] = github_markdown.read()
+          if getdark != 'false':
+            with open('assets/github-markdown-dark.css', 'r') as github_markdown_dark:
+              view['markdown_css'] = ' '.join((github_markdown_dark.read(), view['markdown_css']))
       # rst
       elif parse_rst == True and getf.endswith('.rst'):
         view['noncsv'] = True
         view['noncsv_rst'] = noncsv_render_file(getf, 'rst')
         with open('assets/github-markdown.css', 'r') as github_markdown:
           view['rst_css'] = github_markdown.read()
+          if getdark != 'false':
+            with open('assets/github-markdown-dark.css', 'r') as github_markdown_dark:
+              view['rst_css'] = ' '.join((github_markdown_dark.read(), view['rst_css']))
       # html
       elif parse_html == True and (getf.endswith('.htm') or getf.endswith('.html')):
         view['noncsv'] = True
