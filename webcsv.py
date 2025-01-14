@@ -321,6 +321,10 @@ def index(subpath=None):
       view['noncsv'] = True
       view['show_plain'] = plain_render_file(getf)
 
+    # raw
+    elif getshow == 'raw':
+      return plain_render_file(getf), 200, { 'Content-Type': 'text/plain' }
+
     else:
       # markdown
       if parse_markdown == True and getf.endswith('.md'):
