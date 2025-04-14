@@ -96,7 +96,11 @@
         {% if view.show_plain %}
           <pre class="noncsv-plain">{{ view.show_plain }}</pre>
         {% else %}
-          <div class="error">Not a CSV file. <small>[<a href="?f={{ view.getf_html_sp }}&amp;show=plain">show</a>]</small></div>
+          <div class="error">
+            Not a CSV file. 
+            <small>[<a href="?f={{ view.getf_html_sp }}&amp;show=plain">show</a>]</small>
+            <small>[<a href="?f={{ view.getf_html_sp }}&amp;show=load">load</a>]</small>
+          </div>
         {% endif %}
       </div>
     {% endif %}

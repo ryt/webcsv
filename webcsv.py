@@ -14,11 +14,13 @@ import csv
 import html
 import config
 import itertools
+import mimetypes
 
 from flask import Flask
 from flask import request
 from urllib.parse import quote
 from flask import render_template
+from flask import send_file, abort
 
 app = Flask(__name__)
 
@@ -320,6 +322,13 @@ def index(subpath=None):
     if getshow == 'plain':
       view['noncsv'] = True
       view['show_plain'] = plain_render_file(getf)
+
+    # load
+    elif getshow == 'load':
+      if not os.path.isfile(getf):
+        abort(404)
+      mime_type, _ = mimetypes.guess_type(getf)
+      return send_file(getf, mimetype=mime_type or 'application/octet-stream')
 
     # raw
     elif getshow == 'raw':
