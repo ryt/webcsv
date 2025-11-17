@@ -2,7 +2,7 @@
 
 # This app uses Flask & Gunicorn with ryt/runapp for deployment.
 
-v = '0.0.5'
+v = '0.0.6'
 
 """
 Copyright (C) 2024 Ray Mentose.
@@ -10,6 +10,7 @@ Latest version of the project on Github at: https://github.com/ryt/webcsv
 """
 
 import os
+import re
 import csv
 import html
 import config
@@ -18,9 +19,10 @@ import mimetypes
 
 from flask import Flask
 from flask import request
-from urllib.parse import quote
 from flask import render_template
 from flask import send_file, abort
+
+from urllib.parse import quote
 
 app = Flask(__name__)
 
@@ -127,6 +129,59 @@ def filter_compare(csv_value, search_value):
 
   return False
 
+def alphatocol(alpha):
+  """alphabets to columns"""
+  alphas = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
+  colmap = {}
+  for i, a in enumerate(alphas):
+    colmap[a] = i # f'c{i+1}'
+  return colmap[alpha]
+
+def decimal_sum(vals):
+  """sums list of integer and float values while maintaining existing decimal places (or none)"""
+  s = [str(v) for v in vals]
+  d = max((len(x.split('.')[1]) for x in s if '.' in x), default=0)
+  scale = 10 ** d
+  total = 0
+  for x in s:
+    if '.' in x:
+      w, f = x.split('.')
+      total += int(w) * scale + int(f.ljust(d, '0'))
+    else:
+      total += int(x) * scale
+  if d == 0:
+    return f"{total:,}"
+  w, f = divmod(total, scale)
+  f = str(f).rjust(d, '0').rstrip('0')
+  whole = f"{w:,}" # add commas to thousands place (english)
+  return whole if f == "" else f"{whole}.{f}"
+
+def runformulas(cell, rawcsvcopy):
+  """basic formula operations"""
+  # --- 1. sum from colrow:colrow ---
+  if '=sum(' in cell:
+    # e.g. =sum(a1:a5)
+    match = re.search(r'=sum\(([a-zA-Z]+)([0-9]+):([a-zA-Z]+)([0-9]+)\)', cell)
+    if match:
+      start_col = alphatocol(match.group(1))
+      start_row = int(match.group(2))
+      end_col   = alphatocol(match.group(3))
+      end_row   = int(match.group(4))
+      get_rows  = []
+      for i, row in enumerate(rawcsvcopy):
+        if start_row <= i <= end_row:
+          try:
+            cell_val = float(row[start_col].strip('$')) # strips $, converts to float
+            get_rows.append(cell_val)
+          except Exception:
+            pass
+        if i > end_row:
+          break
+      sum_rows = decimal_sum(get_rows) # sums & maintains existing decimal places
+      cell = cell.replace(match.group(0), str(sum_rows))
+
+  return str(cell)
+
 def html_return_error(text):
   return f'<div class="error">{text}</div>'
 
@@ -139,8 +194,9 @@ def html_render_csv(path):
 
     with open(path, 'r') as file:
 
-      getfilter = get_query('filter')
-      getsort = get_query('sort')
+      getfilter  = get_query('filter')
+      getsort    = get_query('sort')
+      getrun     = get_query('run')
       html_table = ''
 
       content = file.read()
@@ -148,12 +204,17 @@ def html_render_csv(path):
       if getfilter:
         filter_insts = parse_filter(getfilter)
         filter_ihtml = [f"<b>{f['key']}</b> = <b>{f['val']}</b>" for f in filter_insts]
-        html_table = f'<div class="top-filter hide-on-hide">Applying filter: {", ".join(filter_ihtml)}. Filtered rows: ##__filtered_rows__##.</div>'
+        html_table = ''.join((
+          f'<div class="top-filter hide-on-hide">Applying filter: {", ".join(filter_ihtml)}.',
+          f' Filtered rows: ##__filtered_rows__##.</div>'
+        ))
 
 
       html_table += '<table class="csv-table">\n'
       # added {skiinitialspace=True} to fix issue with commas inside quoted cells
-      csv_reader = csv.reader(content.splitlines(), skipinitialspace=True)
+      csv_reader = csv.reader(content.splitlines(), skipinitialspace=True) # csv reader object from the csv data
+      csv_reader, rawcsvcopy = itertools.tee(csv_reader) # duplicate into multiple iterators (for multiple consumption)
+      rawcsvcopy = list(rawcsvcopy) # permanent reusable copy of csv_reader
       headers = next(csv_reader)
 
       html_table += '<tr>'
@@ -192,6 +253,8 @@ def html_render_csv(path):
 
 
           for cell in row:
+            if getrun == 'true':
+              cell = runformulas(cell, rawcsvcopy)
             cell = html.escape(cell)
             table_row += f'<td>{cell}</td>'
 
@@ -200,6 +263,8 @@ def html_render_csv(path):
         else:
           table_row = '<tr>'
           for cell in row:
+            if getrun == 'true':
+              cell = runformulas(cell, rawcsvcopy)
             cell = html.escape(cell)
             table_row += f'<td>{cell}</td>'
           table_row += '</tr>\n'
@@ -216,7 +281,8 @@ def html_render_csv(path):
   except FileNotFoundError:
     render = html_return_error(f"The file '{path_mod}' does not exist.")
 
-  except:
+  except Exception as e:
+    print(e)
     render = html_return_error(f"The file '{path_mod}' could not be parsed.")
 
   return render
@@ -287,6 +353,7 @@ def index(subpath=None):
   getsort     = get_query('sort')
   getfilter   = get_query('filter')
   getdark     = get_query('dark')
+  getrun      = get_query('run')
   getf_html   = remove_limitpath(getf)  # limitpath mods for client/browser side view
   getf        = add_limitpath(getf)     # limitpath mods for internal processing
 
@@ -295,6 +362,7 @@ def index(subpath=None):
     'getsort'   : getsort,
     'getfilter' : getfilter,
     'getdark'   : getdark,
+    'getrun'    : getrun,
     'dirlist'   : False,
   }
   listfs = []
@@ -380,6 +448,7 @@ def index(subpath=None):
   view['address']         = address
   view['getf_html']       = getf_html
   view['getf_html_sp']    = sp(getf_html)
+  view['getrun_query']    = f'&run={getrun}' if getrun else ''
   view['getshow_query']   = f'&show={getshow}' if getshow else ''
   view['getsort_query']   = f'&sort={getsort}' if getsort else ''
   view['getfilter_query'] = f'&filter={getfilter}' if getfilter else ''

@@ -17,7 +17,7 @@
     .webcsv a { color: #000; text-decoration: none; }
     .webcsv a:hover { text-decoration: underline; }
     .webcsv a.dotfiles { color:#777; }
-    .address { font-family: monospace; padding: 8px 16px; border-bottom: 1px solid #aaa; background: #eee; }
+    .address { font-family: monospace; padding: 8px 16px; border-bottom: 1px solid #aaa; background: #eee; line-height:1.75; }
     .address a { text-decoration: underline; }
     .address span { color:#777; }
     .address a:last-child { font-weight: bold; }
@@ -50,19 +50,24 @@
 <body>
 
   {% if view.show_header %}
+  {# --- query string url construction order: f, show, sort, filter, run, hide --- #}
   <div class="webcsv">
     <h2 class="webcsv-h2">
       <a href="{{ view.app_path }}?f=/">webcsv</a>
-      <a class="hide" href="?f={{ view.getf_html_sp }}{{ view.getshow_query }}{{ view.getsort_query }}{{ view.getfilter_query }}&amp;hide=true">&#10548;</a>
+      <a class="hide" href="?f={{ view.getf_html_sp }}{{ view.getshow_query }}{{ view.getsort_query }}{{ view.getfilter_query }}{{ view.getrun_query }}&amp;hide=true">&#10548;</a>
       {% if not view.dirlist %}
         {% if view.show_plain %}
-          <small>[<a href="?f={{ view.getf_html_sp }}">x</a>]</small>
+          <small>[<a href="?f={{ view.getf_html_sp }}{{ view.getsort_query }}{{ view.getfilter_query }}{{ view.getrun_query }}">x</a>]</small>
         {% else %}
-          <small>[<a href="?f={{ view.getf_html_sp }}&amp;show=plain">plain</a>]</small>
+          <small>[<a href="?f={{ view.getf_html_sp }}&amp;show=plain{{ view.getsort_query }}{{ view.getfilter_query }}{{ view.getrun_query }}">plain</a>]</small>
         {% endif %}
-        <small>[sort 
-          <a href="?f={{ view.getf_html_sp }}{{ view.getshow_query }}{{ view.getfilter_query }}" class="{{ 'bold' if not view.getsort else '' }}">a-z</a> 
-          <a href="?f={{ view.getf_html_sp }}{{ view.getshow_query }}{{ view.getfilter_query }}&amp;sort=za" class="{{ 'bold' if view.getsort == 'za' else '' }}">z-a</a>]
+        <small>[sort: 
+          <a href="?f={{ view.getf_html_sp }}{{ view.getshow_query }}{{ view.getfilter_query }}{{ view.getrun_query }}" class="{{ 'bold' if not view.getsort else '' }}">a-z</a> 
+          <a href="?f={{ view.getf_html_sp }}{{ view.getshow_query }}&amp;sort=za{{ view.getfilter_query }}{{ view.getrun_query }}" class="{{ 'bold' if view.getsort == 'za' else '' }}">z-a</a>]
+        </small>
+        <small>
+        [<a href="javascript:;" data-href="?f={{ view.getf_html_sp }}{{ view.getshow_query }}{{ view.getsort_query }}" class="{{ 'bold' if view.getfilter else '' }}" id="filter-prompt">filter</a>]
+        [<a href="?f={{ view.getf_html_sp }}{{ view.getshow_query }}{{ view.getsort_query }}{{ view.getfilter_query }}{{ '' if view.getrun == 'true' else '&run=true' }}" class="{{ 'bold' if view.getrun == 'true' else '' }}">run</a>]
         </small>
       {% endif %}
     </h2>
@@ -108,6 +113,22 @@
       </div>
     {% endif %}
   {% endif %}
+
+  <script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function() {
+      const filterPrompt = document.getElementById('filter-prompt');
+      filterPrompt.addEventListener('click', function(){
+        const dataHref = this.getAttribute('data-href');
+        let p = prompt('Enter filter below (e.g. c1:filter1,c2:filter2):', '{{ view.getfilter }}');
+        if ( p ) {
+          window.location.href = dataHref + '&filter=' + p + '{{ view.getrun_query | safe }}';
+        } else {
+          window.location.href = dataHref + '{{ view.getrun_query | safe }}';
+        }
+        return false;
+      });
+    });
+  </script>
 
 </body>
 </html>
