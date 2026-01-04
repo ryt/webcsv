@@ -88,7 +88,19 @@ To use webcsv in a particular folder locally, copy `webcsv.html` to that folder 
 
 As mentioned above, you can change the port and path in `webcsv.html` if you have a custom port and path for the app.
 
-### Mac App Notes
+### Mac Quick Actions *Open With* Option
+
+The fastest way to create an option with webcsv option for files on a Mac is to create a workflow file in `~/Library/Services/`. Once you've navigated to that folder follow these steps.
+
+1. Open **Automator** and select **New** -> **Quick Action**.
+2. Choose **Run Shell Script**
+3. Add `open "https://localhost:8002/webcsv?f=$1"` to the shell script
+4. Save the file with the name you want displayed as a context menu
+5. To test, right click a file and you should see the new menu item inside the Quick Actions menu
+
+
+
+### Mac App *Open With* Option
 
 You can also create a Mac application named **webcsv.app** to use as the default app to open CSV files with using the following AppleScript. If you change the default port and/or want to use a different browser, make sure to modify the script as well.
 
