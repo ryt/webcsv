@@ -90,13 +90,13 @@ As mentioned above, you can change the port and path in `webcsv.html` if you hav
 
 ### Mac Quick Actions *Open With* Option
 
-The fastest way to create an option with webcsv option for files on a Mac is to create a workflow file in `~/Library/Services/`. Once you've navigated to that folder follow these steps.
+The fastest way to create a right click menu option to open csv (and other) files via webcsv on a Mac is to create a workflow file in `~/Library/Services/`. Once you've navigated to that folder follow these steps.
 
 1. Open **Automator** and select **New** -> **Quick Action**.
 2. Choose **Run Shell Script**
 3. Add `open "https://localhost:8002/webcsv?f=$1"` to the shell script
-4. Save the file with the name you want displayed as a context menu
-5. To test, right click a file and you should see the new menu item inside the Quick Actions menu
+4. Save the file in `~/Library/Services/` with the name you want
+5. To test, right click on a file and you should see the new menu item inside the Quick Actions menu
 
 
 
