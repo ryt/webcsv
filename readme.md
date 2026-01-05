@@ -105,7 +105,7 @@ The fastest way to create a right click menu option to open csv (and other) file
 You can also create a Mac application named **webcsv.app** to use as the default app to open CSV files with using the following AppleScript. If you change the default port and/or want to use a different browser, make sure to modify the script as well.
 
 ```applescript
-on open (csvFiles)	set filePath to POSIX path of item 1 of csvFiles	tell application "Google Chrome"		activate		open location "http://127.0.0.1:8002/webcsv?f=" & filePath	end tellend open
+on open (csvFiles)	set filePath to POSIX path of item 1 of csvFiles	tell application "Google Chrome"		activate		open location "https://localhost:8002/webcsv?f=" & filePath	end tellend open
 ```
 
 --
