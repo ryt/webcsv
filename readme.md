@@ -108,7 +108,5 @@ You can also create a Mac application named **webcsv.app** to use as the default
 on open (csvFiles)	set filePath to POSIX path of item 1 of csvFiles	tell application "Google Chrome"		activate		open location "https://localhost:8002/webcsv?f=" & filePath	end tellend open
 ```
 
---
 
-<sub>Copyright &copy; 2024 Ray Mentose.</sub>
 

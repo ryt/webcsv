@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 
-# This app uses Flask & Gunicorn with ryt/runapp for deployment.
-
 v = '0.0.6'
 
 """
-Copyright (C) 2024 Ray Mentose.
-Latest version of the project on Github at: https://github.com/ryt/webcsv
+copyright (c) 2024 ray mentose
+latest version of the project: https://github.com/ryt/webcsv
 """
 
 import os
