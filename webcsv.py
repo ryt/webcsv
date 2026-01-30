@@ -3,8 +3,8 @@
 v = '0.0.6'
 
 """
-copyright (c) 2024 ray mentose
-latest version of the project: https://github.com/ryt/webcsv
+Copyright (C) 2024 Ray (github.com/ryt)
+Latest version of the project: https://github.com/ryt/webcsv
 """
 
 import os
