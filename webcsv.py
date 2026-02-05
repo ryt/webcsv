@@ -321,6 +321,13 @@ def noncsv_render_file(path, ftype):
           render = f'<article class="markdown-body">{core.publish_parts(source=file.read(), writer_name="html")["html_body"]}</article>'
         elif ftype == 'html':
           render = file.read()
+          # remove tags: doctype, html, head, body
+          render = re.sub(
+            r'<!DOCTYPE html>\s*|<html>\s*|</html>\s*|<head>\s*|</head>\s*|<body>\s*|</body>',
+            '',
+            render,
+            flags=re.IGNORECASE,
+          )
         else:
           render = f"The file '{path_mod}' is not in supported format."
       except:
