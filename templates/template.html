@@ -35,84 +35,87 @@
     .csv-table th, .csv-table td { border: 1px solid #ccc; padding: 8px; font-weight: normal; }
     .csv-table th { background: linear-gradient(#f9f9f9 0% 50%, #f2f2f2 50% 100%); }
     .csv-table td { }
-  {% if view.markdown_css %}
+  {%- if view.markdown_css %}
     /* Markdown CSS from: https://sindresorhus.com/github-markdown-css/github-markdown.css */
     .show-markdown { min-width: 200px; max-width: 830px; margin: 20px auto 40px; padding:8px 32px 16px; border:1px solid #ddd; }
     {{ view.markdown_css }}
-  {% elif view.rst_css %}
+  {%- elif view.rst_css %}
     /* RST Styling (via Markdown) CSS from: https://sindresorhus.com/github-markdown-css/github-markdown.css */
     .markdown-body table { border-width: 0; }
     .show-rst { min-width: 200px; max-width: 830px; margin: 20px auto 40px; padding:8px 32px 16px; border:1px solid #ddd; }
     {{ view.rst_css }}
-  {% endif %}
+  {%- endif %}
   </style>
 </head>
 <body>
 
-  {% if view.show_header %}
-  {# --- query string url construction order: f, show, sort, filter, run, hide --- #}
+  {%- if view.show_header %}
+  {#- --- query string url construction order: f, show, sort, filter, run, hide --- -#}
   <div class="webcsv">
     <h2 class="webcsv-h2">
       <a href="{{ view.app_path }}?f=/">webcsv</a>
       <a class="hide" href="?f={{ view.getf_html_sp }}{{ view.getshow_query }}{{ view.getsort_query }}{{ view.getfilter_query }}{{ view.getrun_query }}&amp;hide=true">&#10548;</a>
-      {% if not view.dirlist %}
-        {% if view.show_plain %}
-          <small>[<a href="?f={{ view.getf_html_sp }}{{ view.getsort_query }}{{ view.getfilter_query }}{{ view.getrun_query }}">x</a>]</small>
-        {% else %}
-          <small>[<a href="?f={{ view.getf_html_sp }}&amp;show=plain{{ view.getsort_query }}{{ view.getfilter_query }}{{ view.getrun_query }}">plain</a>]</small>
-        {% endif %}
-        <small>[sort: 
-          <a href="?f={{ view.getf_html_sp }}{{ view.getshow_query }}{{ view.getfilter_query }}{{ view.getrun_query }}" class="{{ 'bold' if not view.getsort else '' }}">a-z</a> 
-          <a href="?f={{ view.getf_html_sp }}{{ view.getshow_query }}&amp;sort=za{{ view.getfilter_query }}{{ view.getrun_query }}" class="{{ 'bold' if view.getsort == 'za' else '' }}">z-a</a>]
-        </small>
-        <small>
+      {%- if not view.dirlist %}
+        {%- if view.show_plain %}
+      <small>[<a href="?f={{ view.getf_html_sp }}{{ view.getsort_query }}{{ view.getfilter_query }}{{ view.getrun_query }}">x</a>]</small>
+        {%- else %}
+      <small>[<a href="?f={{ view.getf_html_sp }}&amp;show=plain{{ view.getsort_query }}{{ view.getfilter_query }}{{ view.getrun_query }}">plain</a>]</small>
+        {%- endif %}
+      <small>[sort: 
+        <a href="?f={{ view.getf_html_sp }}{{ view.getshow_query }}{{ view.getfilter_query }}{{ view.getrun_query }}" class="{{ 'bold' if not view.getsort else '' }}">a-z</a> 
+        <a href="?f={{ view.getf_html_sp }}{{ view.getshow_query }}&amp;sort=za{{ view.getfilter_query }}{{ view.getrun_query }}" class="{{ 'bold' if view.getsort == 'za' else '' }}">z-a</a>]
+      </small>
+      <small>
         [<a href="javascript:;" data-href="?f={{ view.getf_html_sp }}{{ view.getshow_query }}{{ view.getsort_query }}" class="{{ 'bold' if view.getfilter else '' }}" id="filter-prompt">filter</a>]
         [<a href="?f={{ view.getf_html_sp }}{{ view.getshow_query }}{{ view.getsort_query }}{{ view.getfilter_query }}{{ '' if view.getrun == 'true' else '&run=true' }}" class="{{ 'bold' if view.getrun == 'true' else '' }}">run</a>]
-        </small>
-      {% endif %}
+      </small>
+      {%- endif %}
     </h2>
   </div>
 
   <div class="webcsv address">
-    Path: {% for a in view.address %} <span>{{ a.separator }}</span> <a href="?f={{ a.path }}">{{ a.name }}</a>{% endfor %}
+    Path: 
+    {%- for a in view.address %} 
+    <span>{{ a.separator }}</span> <a href="?f={{ a.path }}">{{ a.name }}</a>
+    {%- endfor %}
   </div>
-  {% endif %}
+  {%- endif %}
 
-  {% if view.listfs %}
+  {%- if view.listfs %}
   <div class="webcsv dir-list">
-    {% for f in view.listfs %}
+    {%- for f in view.listfs %}
       <div class="dir-item"><a href="?f={{ f.path }}" class="{% if f.name.startswith('.') %}dotfiles{% endif %}">{{ f.name }}</a></div>
-    {% endfor %}
+    {%- endfor %}
   </div>
-  {% endif %}
+  {%- endif %}
 
-  {% if view.csvshow %}
+  {%- if view.csvshow %}
     <div class="webcsv file-show">
       {{ view.csvshow | safe }}
     </div>
-  {% endif %}
+  {%- endif %}
 
-  {% if view.noncsv %}
-    {% if view.noncsv_markdown %}
+  {%- if view.noncsv %}
+    {%- if view.noncsv_markdown %}
       <div class="show-markdown">{{ view.noncsv_markdown | safe }}</div>
-    {% elif view.noncsv_rst %}
+    {%- elif view.noncsv_rst %}
       <div class="show-rst">{{ view.noncsv_rst | safe }}</div>
-    {% elif view.noncsv_html %}
+    {%- elif view.noncsv_html %}
       <div class="show-html">{{ view.noncsv_html | safe }}</div>
-    {% else %}
+    {%- else %}
       <div class="webcsv dir-list">
-        {% if view.show_plain %}
+        {%- if view.show_plain %}
           <pre class="noncsv-plain">{{ view.show_plain }}</pre>
-        {% else %}
+        {%- else %}
           <div class="error">
             Not a CSV file. 
             <small>[<a href="?f={{ view.getf_html_sp }}&amp;show=plain">show</a>]</small>
             <small>[<a href="?f={{ view.getf_html_sp }}&amp;show=load">load</a>]</small>
           </div>
-        {% endif %}
+        {%- endif %}
       </div>
-    {% endif %}
-  {% endif %}
+    {%- endif %}
+  {%- endif %}
 
   <script type="text/javascript">
     document.addEventListener("DOMContentLoaded", function() {
